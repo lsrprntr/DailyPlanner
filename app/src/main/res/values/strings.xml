@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">DailyPlanner</string>
+    <string name="todo_list_screen">todo_list_screen</string>
+    <string name="edit_todo">edit_todo</string>
+    <string name="add_item">add todo</string>
+
+</resources>
