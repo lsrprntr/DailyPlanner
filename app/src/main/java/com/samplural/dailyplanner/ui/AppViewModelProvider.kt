@@ -6,7 +6,8 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.samplural.dailyplanner.TodoApplication
-import com.samplural.dailyplanner.ui.screens.DailyPlannerViewModel
+import com.samplural.dailyplanner.ui.screens.TodoListViewModel
+import com.samplural.dailyplanner.ui.screens.TodoEditViewModel
 
 
 /**
@@ -15,7 +16,11 @@ import com.samplural.dailyplanner.ui.screens.DailyPlannerViewModel
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
-            DailyPlannerViewModel(
+            TodoListViewModel(
+                todoApplication().container.todoRepository)
+        }
+        initializer {
+            TodoEditViewModel(
                 todoApplication().container.todoRepository)
         }
     }

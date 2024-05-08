@@ -10,14 +10,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class DailyPlannerViewModel(private val todoRepository: TodoRepository) : ViewModel() {
+class TodoListViewModel(private val todoRepository: TodoRepository) : ViewModel() {
 
-    val dailyPlannerUiState: StateFlow<DailyPlannerUiState> =
-        todoRepository.getAllTodosStream().map { DailyPlannerUiState(it) }
+    val todoListUiState: StateFlow<TodoListUiState> =
+        todoRepository.getAllTodosStream().map { TodoListUiState(it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = DailyPlannerUiState()
+                initialValue = TodoListUiState()
             )
 
     companion object {
@@ -26,13 +26,13 @@ class DailyPlannerViewModel(private val todoRepository: TodoRepository) : ViewMo
 
     suspend fun addTodo() {
         viewModelScope.launch {
-            todoRepository.insertTodo(dailyPlannerUiState.value.todoList.first())
+            todoRepository.insertTodo(todoListUiState.value.todoList.first())
         }
     }
 }
 
 
-data class DailyPlannerUiState(
+data class TodoListUiState(
     val todoList: List<Todo> = listOf(
         Todo(1, "Wash the dishes")
     )

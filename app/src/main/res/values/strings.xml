@@ -3,5 +3,7 @@
     <string name="todo_list_screen">todo_list_screen</string>
     <string name="edit_todo">edit_todo</string>
     <string name="add_item">add todo</string>
+    <string name="TopAppBarTitleListScreen">Todo List</string>
+    <string name="TopAppBarTitleEditScreen">Edit Todo</string>
 
 </resources>

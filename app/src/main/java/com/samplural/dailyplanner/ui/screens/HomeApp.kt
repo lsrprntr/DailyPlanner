@@ -1,13 +1,17 @@
 package com.samplural.dailyplanner.ui.screens
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.samplural.dailyplanner.R
 
 
@@ -23,21 +27,46 @@ enum class TodoScreen(@StringRes val title: Int) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeApp(
+    modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    modifier: Modifier = Modifier
 ) {
-    NavHost(
-        navController = navController,
-        startDestination = TodoScreen.TodoListScreen.name,
-        modifier = modifier
-    ) {
-        composable(route = TodoScreen.TodoListScreen.name) {
-            DailyPlannerScreen()
-        }
-        composable(route = TodoScreen.EditTodoScreen.name) {
+    Scaffold { paddingValues ->
+        NavHost(
+            navController = navController,
+            startDestination = TodoScreen.TodoListScreen.name,
+            modifier = modifier.padding(paddingValues)
+        ) {
+            composable(route = TodoScreen.TodoListScreen.name) {
+                TodoListScreen(
+                    onTodoClick = { todo ->
+                        navController.navigate(route = "${TodoScreen.EditTodoScreen.name}/${todo.id}")
+                                  },
+                    onAddTodoClick = {
+                        navController.navigate(route = "${TodoScreen.EditTodoScreen.name}/-1")
+                    }
+                )
+            }
+            composable(
+                route = TodoScreen.EditTodoScreen.name + "/{todoId}",
+                arguments = listOf(
+                    navArgument("todoId") { type = NavType.IntType }
+                )
+            ) {
+                    backStackEntry ->
+                val todoId = backStackEntry.arguments?.getInt("todoId")
 
+                if (todoId != null) {
+                    TodoEditScreen(
+                        todoId = todoId,
+                        onBackClick = {
+                            navController.popBackStack()
+                        }
+                    )
+                }
+            }
         }
     }
+
 }
 
 

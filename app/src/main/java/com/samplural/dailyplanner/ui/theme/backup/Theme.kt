@@ -1,4 +1,4 @@
-package com.samplural.dailyplanner.ui.theme
+package com.samplural.dailyplanner.ui.theme.backup
 
 import android.app.Activity
 import android.os.Build
@@ -38,7 +38,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun DailyPlannerTheme(
+fun DailyPlannerTheme2(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

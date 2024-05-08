@@ -1,4 +1,4 @@
-package com.samplural.dailyplanner.ui.theme
+package com.samplural.dailyplanner.ui.theme.backup
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
