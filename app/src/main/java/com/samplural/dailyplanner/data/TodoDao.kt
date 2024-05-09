@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface TodoDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(todo: Todo)
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(todo: Todo)
     @Delete
     suspend fun delete(todo: Todo)

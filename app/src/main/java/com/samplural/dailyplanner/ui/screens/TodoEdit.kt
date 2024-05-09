@@ -36,7 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.samplural.dailyplanner.R
-import com.samplural.dailyplanner.data.Todo
 import com.samplural.dailyplanner.ui.AppViewModelProvider
 import java.time.Instant
 import java.time.LocalDate
@@ -48,13 +47,13 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun TodoEditScreen(
     modifier: Modifier = Modifier,
-    todoId: Int = -1,
+    todoId: Int,
     viewModel: TodoEditViewModel = viewModel(factory = AppViewModelProvider.Factory),
     onBackClick: () -> Unit
 ) {
     val todoUiState by viewModel.todoEditUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    todoUiState.id = todoId
+
 
     // Initial timeState default
     val (hour, minute) = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")).split(":")
@@ -67,8 +66,8 @@ fun TodoEditScreen(
         )
     }
 
-    val title: MutableState<String> = if (todoId != -1) {
-        remember { mutableStateOf( viewModel.todoEditUiState.value.title) }
+    val title: MutableState<String> = if (todoId != null) {
+        remember { mutableStateOf( "") }
     } else {
         remember { mutableStateOf("")}
     }
@@ -138,17 +137,7 @@ fun TodoEditScreen(
                 }
                 Button(
                     onClick = {
-                        val todoDetails = Todo(
-                            id = todoId,
-                            title = title.value,
-                            time = timeState.value.hour.toString() + ":" + timeState.value.minute.toString(),
-                            date = date.value
-                        )
-                        if (todoId != -1){
-                            viewModel.updateTodo(todoDetails)
-                        } else {
-                            viewModel.insertTodo(todoDetails)
-                        }
+
                     },
                     modifier = modifier
                 ) {
