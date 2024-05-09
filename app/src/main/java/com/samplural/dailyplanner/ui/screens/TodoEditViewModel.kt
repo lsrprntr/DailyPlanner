@@ -15,6 +15,7 @@ class TodoEditViewModel(
 ) : ViewModel() {
 
     var title: String = ""
+    var todoId: Int = -1
 
     suspend fun getTodoById(id: Int): String {
         return todoRepository.getTodoById(id).title
