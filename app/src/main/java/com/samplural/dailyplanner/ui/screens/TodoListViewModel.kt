@@ -24,16 +24,19 @@ class TodoListViewModel(private val todoRepository: TodoRepository) : ViewModel(
         private const val TIMEOUT_MILLIS = 5_000L
     }
 
-    suspend fun addTodo() {
+    fun deleteTodo(todo: Todo) {
         viewModelScope.launch {
-            todoRepository.insertTodo(todoListUiState.value.todoList.first())
+            todoRepository.deleteTodo(todo)
+        }
+    }
+    fun deleteAllTodos() {
+        viewModelScope.launch {
+            todoRepository.deleteAllTodos()
         }
     }
 }
 
 
 data class TodoListUiState(
-    val todoList: List<Todo> = listOf(
-        Todo(1, "Wash the dishes")
-    )
+    val todoList: List<Todo> = listOf()
 )

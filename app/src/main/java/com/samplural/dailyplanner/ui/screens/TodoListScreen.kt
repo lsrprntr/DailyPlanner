@@ -3,6 +3,7 @@
 package com.samplural.dailyplanner.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,9 +29,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ui.theme.AppTypography
@@ -56,9 +58,22 @@ fun TodoListScreen(
                 title = {
                         Text(
                             stringResource(R.string.TopAppBarTitleListScreen),
-                            modifier = Modifier.padding(48.dp))
+                            modifier = Modifier.padding(48.dp),
+                        )
                 },
                 scrollBehavior = scrollBehavior,
+                actions = {
+                    IconButton(onClick = { viewModel.deleteAllTodos() }) {
+                        Box(modifier = modifier,
+                            contentAlignment = Alignment.Center,
+                        ){
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.clear_all),
+                                contentDescription = "Clear All Todos"
+                            )
+                        }
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -72,11 +87,26 @@ fun TodoListScreen(
             }
         },
     ) { innerPadding ->
-        TodoListBody(
+
+        if (todoUiState.todoList.isNotEmpty()) {
+            TodoListBody(
                 todoList = todoUiState.todoList,
                 onTodoClick = onTodoClick,
-                modifier = Modifier.padding(innerPadding)
-        )
+                onDeleteTodo = { viewModel.deleteTodo(it) },
+                modifier = Modifier.padding(innerPadding),
+            )
+        } else {
+            Column (
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                Text(text = "Add some tasks!", style = AppTypography.bodyLarge)
+            }
+        }
+
     }
 }
 
@@ -84,13 +114,17 @@ fun TodoListScreen(
 fun TodoListBody(
     todoList: List<Todo>,
     onTodoClick: (Todo) -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
+    onDeleteTodo: (Todo) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
         items(todoList) { item ->
-            TodoItem(todo = item, onTodoClick = onTodoClick)
+            TodoItem(
+                todo = item,
+                onTodoClick = onTodoClick,
+                onDeleteTodo = onDeleteTodo)
         }
     }
 }
@@ -99,14 +133,15 @@ fun TodoListBody(
 fun TodoItem(
     todo: Todo,
     onTodoClick: (Todo) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDeleteTodo: (Todo) -> Unit
 ){
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(4.dp),
         shape = MaterialTheme.shapes.medium,
-        onClick = { onTodoClick(todo) }
+        onClick = { onTodoClick(todo) },
     ){
         Column(
             modifier = Modifier
@@ -136,7 +171,7 @@ fun TodoItem(
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
                 )
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { onDeleteTodo(todo) }) {
                     Icon(Icons.Filled.Delete, contentDescription = "Delete Todo")
                 }
             }
@@ -147,12 +182,3 @@ fun TodoItem(
 }
 
 
-@Preview
-@Composable
-fun TodoListScreenPreview() {
-    val todo = Todo(
-        id = 1,
-        title = "Learn Compose and laskdjfalsdfj lksjadfas lkjsdfa and the overflow"
-    )
-    TodoItem(todo = todo, onTodoClick = {})
-}

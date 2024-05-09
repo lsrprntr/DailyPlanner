@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 // Connects Dao to Database
-@Database(entities = [Todo::class], version = 3, exportSchema = false)
+@Database(entities = [Todo::class], version = 2, exportSchema = false)
 abstract class TodoDatabase : RoomDatabase() {
 
     abstract fun todoDao(): TodoDao

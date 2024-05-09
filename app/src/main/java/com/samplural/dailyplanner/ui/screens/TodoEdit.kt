@@ -2,8 +2,7 @@
 
 package com.samplural.dailyplanner.ui.screens
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +14,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,54 +25,55 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.samplural.dailyplanner.R
+import com.samplural.dailyplanner.data.Todo
 import com.samplural.dailyplanner.ui.AppViewModelProvider
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoEditScreen(
     modifier: Modifier = Modifier,
-    todoId: Int = 0,
+    todoId: Int = -1,
     viewModel: TodoEditViewModel = viewModel(factory = AppViewModelProvider.Factory),
     onBackClick: () -> Unit
 ) {
-    val todoUiState by viewModel.uiState.collectAsState()
+    val todoUiState by viewModel.todoEditUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    var todo by remember { mutableStateOf(null) }
+    todoUiState.id = todoId
 
-    val timeAndDate = System.currentTimeMillis()
-    val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-    val (hour, minute) = formatter.format(Date(timeAndDate)).split(":")
+    // Initial timeState default
+    val (hour, minute) = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")).split(":")
+    val timeState = remember { mutableStateOf(
+            TimePickerState(
+                initialHour = hour.toInt(),
+                initialMinute = minute.toInt(),
+                is24Hour = false
+            )
+        )
+    }
 
-    val timeState = TimePickerState(
-        initialHour = hour.toInt(),
-        initialMinute = minute.toInt(),
-        is24Hour = false
-    )
-    val dateState = DatePickerState(
-        locale = Locale.getDefault(),
-        initialSelectedDateMillis = timeAndDate,
-    )
+    val title: MutableState<String> = if (todoId != -1) {
+        remember { mutableStateOf( viewModel.todoEditUiState.value.title) }
+    } else {
+        remember { mutableStateOf("")}
+    }
 
-    val time = formatter.format(Date(timeAndDate))
-
+    val date = remember { mutableStateOf(LocalDate.now().toString())}
 
     Scaffold(
         modifier = modifier,
@@ -92,21 +91,21 @@ fun TodoEditScreen(
         Column (
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp),
+                .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
         ){
-            Text("$todoId", modifier = Modifier.padding(paddingValues))
-            Text(time)
-
+            Text(todoId.toString())
+            Text(todoUiState.time + " " + todoUiState.date + " " + todoUiState.title)
+            Text(timeState.value.hour.toString() + ":" + timeState.value.minute.toString())
             OutlinedTextField(
-                value = "todoUiState",
-
+                value = title.value,
                 label = {
                     Text(
                         text = "Write a task here"
                     )
                 },
                 onValueChange = {
+                    title.value = it
                 },
                 modifier = modifier
                     .fillMaxWidth()
@@ -115,39 +114,72 @@ fun TodoEditScreen(
 
             TimePicker(
                 modifier = modifier.padding(top = 8.dp),
-                state = timeState
+                state = timeState.value
             )
 
-            CustomDatePicker()
+            EditDatePicker(date = date)
 
-            Button(
-                onClick = {
-                    viewModel.insertTodo(todo = todo)
-                    onBackClick()
-                },
-                modifier = modifier
-            ) {
-                Text(
-                    text = "Back/Save",
-                    modifier = Modifier.padding(8.dp)
-                )
+            Row(
+                modifier = modifier.fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 32.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
+                Button(
+                    onClick = {
+                        onBackClick()
+                    },
+                    modifier = modifier,
+                ) {
+                    Text(
+                        text = "Cancel",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                Button(
+                    onClick = {
+                        val todoDetails = Todo(
+                            id = todoId,
+                            title = title.value,
+                            time = timeState.value.hour.toString() + ":" + timeState.value.minute.toString(),
+                            date = date.value
+                        )
+                        if (todoId != -1){
+                            viewModel.updateTodo(todoDetails)
+                        } else {
+                            viewModel.insertTodo(todoDetails)
+                        }
+                    },
+                    modifier = modifier
+                ) {
+                    Text(
+                        text = "Save",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
             }
+
         }
     }
 }
 
 @Composable
-fun CustomDatePicker() {
-    val date = remember { mutableStateOf(LocalDate.now())}
+fun EditDatePicker(
+    modifier: Modifier = Modifier,
+    date: MutableState<String>
+) {
+
     val isOpen = remember { mutableStateOf(false)}
 
     Row(verticalAlignment = Alignment.CenterVertically) {
 
         OutlinedTextField(
             readOnly = true,
-            value = date.value.format(DateTimeFormatter.ISO_DATE),
+            value = date.value,
             label = { Text("Date") },
-            onValueChange = {})
+            onValueChange = {
+                date.value = it
+            })
 
         IconButton(
             onClick = { isOpen.value = true }
@@ -157,26 +189,27 @@ fun CustomDatePicker() {
     }
 
     if (isOpen.value) {
-        CustomDatePickerDialog(
+        EditDatePickerDialog(
             onAccept = {
-                isOpen.value = false // close dialog
-
-                if (it != null) { // Set the date
+                isOpen.value = false
+                if (it != null) {
                     date.value = Instant
                         .ofEpochMilli(it)
-                        .atZone(ZoneId.of("UTC"))
+                        .atZone(ZoneId.systemDefault())
                         .toLocalDate()
+                        .toString()
                 }
             },
             onCancel = {
-                isOpen.value = false //close dialog
+                isOpen.value = false
             }
         )
     }
 }
 
 @Composable
-fun CustomDatePickerDialog(
+fun EditDatePickerDialog(
+    modifier: Modifier = Modifier,
     onAccept: (Long?) -> Unit,
     onCancel: () -> Unit
 ) {
@@ -196,57 +229,6 @@ fun CustomDatePickerDialog(
         }
     ) {
         DatePicker(state = state)
-    }
-}
-@Composable
-fun DatePickerExample(
-    modifier: Modifier = Modifier,
-    dateState: DatePickerState,
-) {
-    // Initial date
-    var selectedDate by remember { mutableStateOf(dateState) }
-    var showDatePickerDialog by remember { mutableStateOf(false) }
-    val time = selectedDate
-
-    Row() {
-        // Display the selected date
-        Text(
-            text = "Selected Date: ${selectedDate.selectedDateMillis}",
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        // Button to open the date picker dialog
-        Button(onClick = { showDatePickerDialog = true }) {
-            Text(text = "Select Date")
-        }
-    }
-
-    // Date picker dialog
-    if (showDatePickerDialog) {
-        DatePickerDialog(
-            onDismissRequest = { showDatePickerDialog = false },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showDatePickerDialog = false
-                        // Update the selected date
-                        selectedDate = selectedDate
-                    }
-                ) {
-                    Text(text = "OK")
-                }
-            },
-            dismissButton = {
-                Button(onClick = { showDatePickerDialog = false }) {
-                    Text(text = "Cancel")
-                }
-            },
-            content = {
-                DatePicker(
-                    state = selectedDate,
-                    )
-            }
-        )
     }
 }
 
