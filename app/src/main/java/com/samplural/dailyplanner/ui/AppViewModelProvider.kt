@@ -6,8 +6,9 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.samplural.dailyplanner.TodoApplication
-import com.samplural.dailyplanner.ui.screens.TodoListViewModel
+import com.samplural.dailyplanner.ui.screens.HomeAppViewModel
 import com.samplural.dailyplanner.ui.screens.TodoEditViewModel
+import com.samplural.dailyplanner.ui.screens.TodoListViewModel
 
 
 /**
@@ -21,6 +22,10 @@ object AppViewModelProvider {
         }
         initializer {
             TodoEditViewModel(
+                todoApplication().container.todoRepository)
+        }
+        initializer {
+            HomeAppViewModel(
                 todoApplication().container.todoRepository)
         }
     }

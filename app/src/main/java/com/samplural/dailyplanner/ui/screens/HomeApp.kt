@@ -6,6 +6,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -13,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.samplural.dailyplanner.R
+import com.samplural.dailyplanner.ui.AppViewModelProvider
 
 
 /**
@@ -29,6 +31,7 @@ enum class TodoScreen(@StringRes val title: Int) {
 fun HomeApp(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
+    viewModel: HomeAppViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     Scaffold { paddingValues ->
         NavHost(
