@@ -37,10 +37,6 @@ class TodoEditViewModel(
         }
     }
 
-    suspend fun loadTodo(id: Int) {
-    }
-
-
     fun insertTodo(todo: Todo) {
         viewModelScope.launch {
             todoRepository.insertTodo(todo)
