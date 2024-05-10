@@ -13,14 +13,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class TodoEditViewModel(
-    private val todoRepository: TodoRepository,
-    val savedStateHandle: SavedStateHandle
+    private val todoRepository: TodoRepository, val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _todoEditUiState: MutableStateFlow<TodoEditUiState> =
         MutableStateFlow(TodoEditUiState())
-    val todoEditUiState: StateFlow<TodoEditUiState> = _todoEditUiState.asStateFlow()
-        .stateIn(
+    val todoEditUiState: StateFlow<TodoEditUiState> = _todoEditUiState.asStateFlow().stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(TodoEditUiState.TIMEOUT_MILLIS),
             initialValue = TodoEditUiState()
@@ -54,8 +52,6 @@ class TodoEditViewModel(
             todoRepository.updateTodo(todo)
         }
     }
-
-
 }
 
 data class TodoEditUiState(

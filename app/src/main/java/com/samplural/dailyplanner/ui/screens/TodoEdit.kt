@@ -43,10 +43,6 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 
-class ItemDetailsDestination {
-
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoEditScreen(
