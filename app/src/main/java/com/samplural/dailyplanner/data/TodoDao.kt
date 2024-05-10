@@ -12,14 +12,19 @@ import kotlinx.coroutines.flow.Flow
 interface TodoDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(todo: Todo)
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(todo: Todo)
+
     @Delete
     suspend fun delete(todo: Todo)
+
     @Query("SELECT * from todos WHERE id = :id")
     fun getTodo(id: Int): Flow<Todo>
+
     @Query("SELECT * from todos ORDER BY date, time ASC")
     fun getAllItems(): Flow<List<Todo>>
+
     @Query("DELETE FROM todos")
     suspend fun deleteAllTodos()
 

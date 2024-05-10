@@ -56,17 +56,18 @@ fun TodoListScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                        Text(
-                            stringResource(R.string.TopAppBarTitleListScreen),
-                            modifier = Modifier.padding(48.dp),
-                        )
+                    Text(
+                        stringResource(R.string.TopAppBarTitleListScreen),
+                        modifier = Modifier.padding(48.dp),
+                    )
                 },
                 scrollBehavior = scrollBehavior,
                 actions = {
                     IconButton(onClick = { viewModel.deleteAllTodos() }) {
-                        Box(modifier = modifier,
+                        Box(
+                            modifier = modifier,
                             contentAlignment = Alignment.Center,
-                        ){
+                        ) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(id = R.drawable.clear_all),
                                 contentDescription = "Clear All Todos"
@@ -96,13 +97,13 @@ fun TodoListScreen(
                 modifier = Modifier.padding(innerPadding),
             )
         } else {
-            Column (
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
-            ){
+            ) {
                 Text(text = "Add some tasks!", style = AppTypography.bodyLarge)
             }
         }
@@ -124,7 +125,8 @@ fun TodoListBody(
             TodoItem(
                 todo = item,
                 onTodoClick = onTodoClick,
-                onDeleteTodo = onDeleteTodo)
+                onDeleteTodo = onDeleteTodo
+            )
         }
     }
 }
@@ -135,14 +137,14 @@ fun TodoItem(
     onTodoClick: (Todo) -> Unit,
     modifier: Modifier = Modifier,
     onDeleteTodo: (Todo) -> Unit
-){
+) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(4.dp),
         shape = MaterialTheme.shapes.medium,
         onClick = { onTodoClick(todo) },
-    ){
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -161,9 +163,9 @@ fun TodoItem(
                 modifier = modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
-            ){
+            ) {
                 Text(
-                    text = "12:30PM - 1:00PM 12/12/2023",
+                    text = todo.time + " - " + todo.date,
                     modifier = modifier
                         .weight(1f)
                         .padding(horizontal = 8.dp),

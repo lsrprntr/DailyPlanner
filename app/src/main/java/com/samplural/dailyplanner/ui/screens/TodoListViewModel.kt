@@ -13,8 +13,7 @@ import kotlinx.coroutines.launch
 class TodoListViewModel(private val todoRepository: TodoRepository) : ViewModel() {
 
     val todoListUiState: StateFlow<TodoListUiState> =
-        todoRepository.getAllTodosStream().map { TodoListUiState(it) }
-            .stateIn(
+        todoRepository.getAllTodosStream().map { TodoListUiState(it) }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
                 initialValue = TodoListUiState()
@@ -29,6 +28,7 @@ class TodoListViewModel(private val todoRepository: TodoRepository) : ViewModel(
             todoRepository.deleteTodo(todo)
         }
     }
+
     fun deleteAllTodos() {
         viewModelScope.launch {
             todoRepository.deleteAllTodos()
