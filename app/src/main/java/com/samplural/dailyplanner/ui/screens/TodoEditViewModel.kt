@@ -16,6 +16,9 @@ class TodoEditViewModel(
     private val todoRepository: TodoRepository, val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    // Largely unused as I ran into an issue with passing data from one screen to another
+    // I hoisted up the data to the home screen instead.
+    // I should of used savedStateHandle or a shared object both viewmodels can access.
     private val _todoEditUiState: MutableStateFlow<TodoEditUiState> =
         MutableStateFlow(TodoEditUiState())
     val todoEditUiState: StateFlow<TodoEditUiState> = _todoEditUiState.asStateFlow().stateIn(
